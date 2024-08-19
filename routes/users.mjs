@@ -5,7 +5,7 @@ import { ObjectId } from "mongodb";
 const router = express.Router();
 
 // Get a list of users
-router.get("/users", async (req, res) => {
+router.get("/", async (req, res) => {
   let collection = await db.collection("users");
   let results = await collection.find({})
     .toArray();
@@ -24,7 +24,7 @@ router.get("/users", async (req, res) => {
 // });
 
 // Update a user
-router.patch("/users/:id", async (req, res) => {
+router.patch("/:id", async (req, res) => {
   const query = { _id: ObjectId(req.params.id) };
   const updates = {
     $push: { name: req.body }
