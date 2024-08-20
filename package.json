@@ -34,5 +34,16 @@
       "prettier --single-quote --write",
       "eslint --fix"
     ]
-  }
+  },
+  "description": "This repository contains the sample application for the [MongoDB and Express.js REST API tutorial](https://www.mongodb.com/languages/express-mongodb-rest-api-tutorial).",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Taeil2/collabeditor-server.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Taeil2/collabeditor-server/issues"
+  },
+  "homepage": "https://github.com/Taeil2/collabeditor-server#readme"
 }
