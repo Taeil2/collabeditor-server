@@ -8,11 +8,12 @@ const router = express.Router();
 // TODO: filter by user
 router.get("/", async (req, res) => {
   let collection = await db.collection("documents");
-  let results = await collection.find({
-    // "owner": userId,
-    // "collabeditor": userId // contains userId
-  })
-    .sort({"date": -1})
+  let results = await collection
+    .find({
+      // "owner": userId,
+      // "collabeditor": userId // contains userId
+    })
+    .sort({ date: -1 })
     .limit(50)
     .toArray();
 
@@ -22,12 +23,13 @@ router.get("/", async (req, res) => {
 // Get a single document
 router.get("/:id", async (req, res) => {
   let collection = await db.collection("documents");
-  let query = {_id: ObjectId(req.params.id)};
+  let query = { _id: parseInt(req.params.id) };
   let result = await collection.findOne(query);
 
   if (!result) res.send("Not found").status(404);
   else res.send(result).status(200);
 });
+``;
 
 // Add a new document
 router.post("/", async (req, res) => {
@@ -43,7 +45,7 @@ router.post("/", async (req, res) => {
 router.patch("/:id", async (req, res) => {
   const query = { _id: ObjectId(req.params.id) };
   const updates = {
-    $push: { comments: req.body }
+    $push: { comments: req.body },
   };
 
   let collection = await db.collection("posts");
