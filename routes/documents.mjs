@@ -1,5 +1,6 @@
 import express from "express";
 import db from "../db/conn.mjs";
+
 import { ObjectId } from "mongodb";
 
 const router = express.Router();
@@ -10,10 +11,15 @@ router.get("/", async (req, res) => {
   let collection = await db.collection("documents");
   let results = await collection
     .find({
-      // "owner": userId,
-      // "collabeditor": userId // contains userId
+      // $or: [
+      //   {
+      //     "owner._id": parseInt(req.query.id),
+      //     collabeditor: parseInt(req.query.id),
+      //     // "collabeditor._id": parseInt(req.query.id), // contains userId
+      //   },
+      // ],
     })
-    .sort({ date: -1 })
+    .sort({ updated: -1 })
     .limit(50)
     .toArray();
 
@@ -26,17 +32,25 @@ router.get("/:id", async (req, res) => {
   let query = { _id: parseInt(req.params.id) };
   let result = await collection.findOne(query);
 
-  if (!result) res.send("Not found").status(404);
+  if (!result) res.send({ message: "not found" }).status(404);
   else res.send(result).status(200);
 });
-``;
 
 // Add a new document
 router.post("/", async (req, res) => {
   let collection = await db.collection("documents");
-  let newDocument = req.body;
-  newDocument.date = new Date();
+
+  const newDocument = {
+    name: "",
+    content: "",
+    owner: req.body.id,
+    collabeditors: [],
+    updated: new Date(),
+    created: new Date(),
+  };
+
   let result = await collection.insertOne(newDocument);
+
   res.send(result).status(204);
 });
 
@@ -55,7 +69,7 @@ router.patch("/:id", async (req, res) => {
 });
 
 // Delete an entry
-router.delete("/documents/:id", async (req, res) => {
+router.delete("/:id", async (req, res) => {
   const query = { _id: ObjectId(req.params.id) };
 
   const collection = db.collection("documents");
