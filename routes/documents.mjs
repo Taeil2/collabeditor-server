@@ -29,8 +29,7 @@ router.get("/", async (req, res) => {
 // Get a single document
 router.get("/:id", async (req, res) => {
   let collection = await db.collection("documents");
-  let query = { _id: parseInt(req.params.id) };
-  let result = await collection.findOne(query);
+  let result = await collection.findOne({ _id: ObjectId(req.params.id) });
 
   if (!result) res.send({ message: "not found" }).status(404);
   else res.send(result).status(200);
@@ -50,6 +49,10 @@ router.post("/", async (req, res) => {
   };
 
   let result = await collection.insertOne(newDocument);
+
+  console.log("creating document");
+  console.log("id: ", result.insertedId);
+  console.log("owner:", req.body.id);
 
   res.send(result).status(204);
 });

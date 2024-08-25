@@ -6,6 +6,8 @@ const router = express.Router();
 
 // Get a list of users
 router.get("/", async (req, res) => {
+  console.log("getting users");
+
   let collection = await db.collection("users");
   let results = await collection.find({}).toArray();
 
@@ -24,6 +26,7 @@ router.get("/user/", async (req, res) => {
 // Add a new user
 router.post("/", async (req, res) => {
   console.log("adding user", req.body);
+
   let collection = await db.collection("users");
 
   const newUser = {
