@@ -16,7 +16,11 @@ const app = express();
 
 // for socket.io
 const server = createServer(app);
-const io = new Server(server);
+const io = new Server(server, {
+  cors: {
+    origin: "http://localhost:3000",
+  },
+});
 
 app.use(cors());
 app.use(express.json());
@@ -28,11 +32,30 @@ app.get("/", (req, res) => {
 });
 
 io.on("connection", (socket) => {
+  let title = "";
+  let body = "";
+
+  let users = [
+    {
+      id: 123,
+      cursorLocation: "title",
+      cursorPosition: 1,
+    },
+  ];
+
   console.log("a user connected");
 
-  // receive inputs
-  socket.on("chat message", (msg) => {
-    console.log("message: " + msg);
+  socket.on("connect", (document) => {
+    console.log(document);
+  });
+
+  socket.on("title", (key) => {
+    title += key;
+    io.emit("chat message", msg);
+  });
+
+  socket.on("body", (key) => {
+    body += key;
     io.emit("chat message", msg);
   });
 
@@ -55,10 +78,6 @@ app.use((err, _req, res, next) => {
   res.status(500).send("Uh oh! An unexpected error occured.");
 });
 
-// start the Express server (use server for socket.io)
-// app.listen(PORT, () => {
-//   console.log(`Server is running on port: ${PORT}`);
-// });
 server.listen(PORT, () => {
   console.log(`Server is running on port: ${PORT}`);
 });
