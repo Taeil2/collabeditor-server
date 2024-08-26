@@ -5,19 +5,13 @@ import { ObjectId } from "mongodb";
 
 const router = express.Router();
 
-// Get a list of 50 documents
-// TODO: filter by user
 router.get("/", async (req, res) => {
+  console.log("getting documents for", req.query.id);
+
   let collection = await db.collection("documents");
   let results = await collection
     .find({
-      // $or: [
-      //   {
-      //     "owner._id": parseInt(req.query.id),
-      //     collabeditor: parseInt(req.query.id),
-      //     // "collabeditor._id": parseInt(req.query.id), // contains userId
-      //   },
-      // ],
+      $or: [{ owner: req.query.id }, { "collabeditors.id": req.query.id }],
     })
     .sort({ updated: -1 })
     .limit(50)
@@ -58,14 +52,13 @@ router.post("/", async (req, res) => {
 });
 
 // Update the document
-// TODO: This example only updates "comments". Update the entire document.
 router.patch("/:id", async (req, res) => {
   const query = { _id: ObjectId(req.params.id) };
   const updates = {
-    $push: { comments: req.body },
+    $set: req.body,
   };
 
-  let collection = await db.collection("posts");
+  let collection = await db.collection("documents");
   let result = await collection.updateOne(query, updates);
 
   res.send(result).status(200);
