@@ -37,6 +37,10 @@ app.get("/", (req, res) => {
 const liveDocuments = {};
 
 io.on("connection", (socket) => {
+  // setInterval(() => {
+  //   console.log(liveDocuments);
+  // }, 30000);
+
   // info is {document, user}
   socket.on("join", (info) => {
     console.log(`${info.user.name} joined room ${info.document._id}`);
@@ -89,18 +93,17 @@ io.on("connection", (socket) => {
   socket.on("leave", (info) => {
     console.log(`${info.user?.name} left room ${info.document._id}`);
 
-    // if there is only one user, delete the document from the server
+    // if it only has one user, delete the document
     if (
       liveDocuments[info.document._id] && // check for document
       Object.keys(liveDocuments[info.document._id].currentUsers).length === 1
     ) {
       delete liveDocuments[info.document?._id];
     } else {
-      // otherwise, remove the user
+      // otherwise, remove the user and send the updated document
       delete liveDocuments[info.document?._id]?.currentUsers[info.user._id];
+      io.to(info.document._id).emit("leave", liveDocuments[info.document._id]);
     }
-
-    io.to(info.document?._id).emit("leave", liveDocuments[info.document._id]);
 
     console.log("live documents: ", liveDocuments);
   });
@@ -150,7 +153,7 @@ io.on("connection", (socket) => {
   });
 
   socket.on("disconnect", () => {
-    // console.log("user disconnected");
+    console.log("user disconnected");
   });
 });
 
