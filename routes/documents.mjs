@@ -58,11 +58,19 @@ router.patch("/:id", async (req, res) => {
     $set: req.body,
   };
 
-  let collection = await db.collection("documents");
-  let result = await collection.updateOne(query, updates);
+  // let collection = await db.collection("documents");
+  // let result = await collection.updateOne(query, updates);
+  const result = updateDocument(query, updates);
 
   res.send(result).status(200);
 });
+
+const updateDocument = async (query, updates) => {
+  let collection = await db.collection("documents");
+  let result = await collection.updateOne(query, updates);
+
+  return result;
+};
 
 // Delete an entry
 router.delete("/:id", async (req, res) => {
@@ -74,4 +82,5 @@ router.delete("/:id", async (req, res) => {
   res.send(result).status(200);
 });
 
+export { updateDocument };
 export default router;
