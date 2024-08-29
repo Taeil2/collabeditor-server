@@ -5,8 +5,12 @@ import { ObjectId } from "mongodb";
 
 const router = express.Router();
 
+// enable this to see logs
+const enableConsoleLogs = false;
+
 router.get("/", async (req, res) => {
-  console.log("getting documents for", req.query.id);
+  enableConsoleLogs &&
+    console.log("documents: getting documents for user", req.query.id);
 
   let collection = await db.collection("documents");
   let results = await collection
@@ -22,6 +26,9 @@ router.get("/", async (req, res) => {
 
 // Get a single document
 router.get("/:id", async (req, res) => {
+  enableConsoleLogs &&
+    console.log("documents: getting document id", req.params.id);
+
   let collection = await db.collection("documents");
   let result = await collection.findOne({ _id: ObjectId(req.params.id) });
 
@@ -31,6 +38,9 @@ router.get("/:id", async (req, res) => {
 
 // Add a new document
 router.post("/", async (req, res) => {
+  enableConsoleLogs &&
+    console.log("documents: creating document for user", req.body.id);
+
   let collection = await db.collection("documents");
 
   const newDocument = {
@@ -44,10 +54,6 @@ router.post("/", async (req, res) => {
 
   let result = await collection.insertOne(newDocument);
 
-  console.log("creating document");
-  console.log("id: ", result.insertedId);
-  console.log("owner:", req.body.id);
-
   res.send(result).status(204);
 });
 
@@ -58,14 +64,14 @@ router.patch("/:id", async (req, res) => {
     $set: req.body,
   };
 
-  // let collection = await db.collection("documents");
-  // let result = await collection.updateOne(query, updates);
   const result = updateDocument(query, updates);
 
   res.send(result).status(200);
 });
 
 const updateDocument = async (query, updates) => {
+  enableConsoleLogs && console.log("documents: updating document", query._id);
+
   let collection = await db.collection("documents");
   let result = await collection.updateOne(query, updates);
 
@@ -74,6 +80,9 @@ const updateDocument = async (query, updates) => {
 
 // Delete an entry
 router.delete("/:id", async (req, res) => {
+  enableConsoleLogs &&
+    console.log("documents: deleting document", req.params.id);
+
   const query = { _id: ObjectId(req.params.id) };
 
   const collection = db.collection("documents");

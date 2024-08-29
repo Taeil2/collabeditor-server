@@ -4,9 +4,12 @@ import { ObjectId } from "mongodb";
 
 const router = express.Router();
 
+// enable this to see logs
+const enableConsoleLogs = false;
+
 // Get a list of users
 router.get("/", async (req, res) => {
-  console.log("getting users");
+  enableConsoleLogs && console.log("users: getting users");
 
   let collection = await db.collection("users");
   let results = await collection.find({}).toArray();
@@ -16,6 +19,8 @@ router.get("/", async (req, res) => {
 
 // Get a single user
 router.get("/user/", async (req, res) => {
+  enableConsoleLogs && console.log("users: getting user id", req.query);
+
   let collection = await db.collection("users");
   let result = await collection.findOne(req.query);
 
@@ -25,7 +30,7 @@ router.get("/user/", async (req, res) => {
 
 // Add a new user
 router.post("/", async (req, res) => {
-  console.log("adding user", req.body);
+  enableConsoleLogs && console.log("users: adding user", req.body.email);
 
   let collection = await db.collection("users");
 
@@ -41,6 +46,8 @@ router.post("/", async (req, res) => {
 
 // Update a user
 router.patch("/:id", async (req, res) => {
+  enableConsoleLogs && console.log("users: updating user id", req.params.id);
+
   const query = { _id: ObjectId(req.params.id) };
   const updates = {
     $set: req.body,

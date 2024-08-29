@@ -86,7 +86,7 @@ io.on("connection", (socket) => {
     socket.join(info.document._id);
     io.to(info.document._id).emit("join", liveDocuments[info.document._id]);
 
-    console.log("live documents: ", liveDocuments);
+    // console.log("live documents: ", liveDocuments);
   });
 
   // info is {document, user}
@@ -105,7 +105,7 @@ io.on("connection", (socket) => {
       io.to(info.document._id).emit("leave", liveDocuments[info.document._id]);
     }
 
-    console.log("live documents: ", liveDocuments);
+    // console.log("live documents: ", liveDocuments);
   });
 
   let nameTimer;
