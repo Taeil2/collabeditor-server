@@ -21,6 +21,10 @@ export const runSocketIo = () => {
     //   console.log(liveDocuments);
     // }, 30000);
 
+    console.log("");
+
+    console.log("io connection: id:", socket.id);
+
     // info is {document, user}
     socket.on("join", (info) => {
       enableConsoleLogs &&
@@ -68,6 +72,8 @@ export const runSocketIo = () => {
       // join the session for the document id
       socket.join(info.document._id);
       io.to(info.document._id).emit("join", liveDocuments[info.document._id]);
+
+      console.log("socket join: id:", socket.id);
     });
 
     // info is {document, user}
@@ -93,6 +99,7 @@ export const runSocketIo = () => {
       }
 
       // console.log("live documents: ", liveDocuments);
+      console.log("socket leave: id:", socket.id);
     });
 
     let nameTimer;
@@ -117,6 +124,8 @@ export const runSocketIo = () => {
         updateDocument(query, updates);
         enableConsoleLogs && console.log("socket.io: saving name:", info.name);
       }, 500);
+
+      console.log("socket name: id:", socket.id);
     });
 
     let bodyTimer;
@@ -142,6 +151,8 @@ export const runSocketIo = () => {
         updateDocument(query, updates);
         enableConsoleLogs && console.log("updating body:", info.body);
       }, 500);
+
+      console.log("socket body: id:", socket.id);
     });
 
     // info is { document, collabeditors }
@@ -164,10 +175,16 @@ export const runSocketIo = () => {
       };
 
       updateDocument(query, updates);
+
+      console.log("socket collabeditors: id:", socket.id);
+    });
+
+    socket.on("connect", (e) => {
+      console.log("socket connect: id:", socket.id);
     });
 
     socket.on("disconnect", (e) => {
-      console.log("user disconnected", e);
+      console.log("socket disconnect: id:", socket.id);
     });
   });
 };
