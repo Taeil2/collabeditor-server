@@ -108,28 +108,6 @@ io.on("connection", (socket) => {
     console.log("live documents: ", liveDocuments);
   });
 
-  let bodyTimer;
-  socket.on("body", (info) => {
-    // info is {document, user, body, key}
-    clearInterval(bodyTimer);
-    liveDocuments[info.document?._id].content = info.body;
-
-    io.to(info.document._id).emit("body", liveDocuments[info.document._id]);
-
-    // save document after 500 ms of no input
-    bodyTimer = setTimeout(() => {
-      const query = { _id: ObjectId(info.document._id) };
-      const updates = {
-        $set: {
-          content: info.body,
-        },
-      };
-
-      updateDocument(query, updates);
-      console.log("updating body", info.body);
-    }, 500);
-  });
-
   let nameTimer;
   socket.on("name", (info) => {
     // info is { document, user }
@@ -150,6 +128,51 @@ io.on("connection", (socket) => {
       updateDocument(query, updates);
       console.log("updating name", info.name);
     }, 500);
+  });
+
+  let bodyTimer;
+  socket.on("body", (info) => {
+    // info is {document, user, body, key}
+    clearInterval(bodyTimer);
+    if (liveDocuments[info.document?._id]) {
+      liveDocuments[info.document?._id].content = info.body;
+    }
+
+    io.to(info.document._id).emit("body", liveDocuments[info.document._id]);
+
+    // save document after 500 ms of no input
+    bodyTimer = setTimeout(() => {
+      const query = { _id: ObjectId(info.document._id) };
+      const updates = {
+        $set: {
+          content: info.body,
+        },
+      };
+
+      updateDocument(query, updates);
+      console.log("updating body", info.body);
+    }, 500);
+  });
+
+  socket.on("collabeditors", (info) => {
+    // info is { document, collabeditors }
+    console.log("updating collabeditors", info.collabeditors);
+
+    liveDocuments[info.document?._id].collabeditors = info.collabeditors;
+
+    io.to(info.document._id).emit(
+      "collabeditors",
+      liveDocuments[info.document._id]
+    );
+
+    const query = { _id: ObjectId(info.document._id) };
+    const updates = {
+      $set: {
+        collabeditors: info.collabeditors,
+      },
+    };
+
+    updateDocument(query, updates);
   });
 
   socket.on("disconnect", () => {
