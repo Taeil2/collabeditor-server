@@ -15,15 +15,51 @@ export const runSocketIo = () => {
   });
 
   const liveDocuments = {};
-
+  const socketsInRooms = {};
   io.on("connection", (socket) => {
-    // setInterval(() => {
-    //   console.log(liveDocuments);
-    // }, 30000);
+    enableConsoleLogs &&
+      console.log("socket.io: socket connecting to io: id:", socket.id);
 
-    console.log("");
+    // connect event is not working
+    // socket.on("connect", (e) => {});
 
-    console.log("io connection: id:", socket.id);
+    // disconnect from server (includes refresh, )
+    socket.on("disconnect", () => {
+      enableConsoleLogs &&
+        console.log("socket.io: socket disconnecting: id:", socket.id);
+
+      disconnecting();
+    });
+
+    socket.on("leave", () => {
+      enableConsoleLogs &&
+        console.log("socket.io: socket leaving: id:", socket.id);
+
+      disconnecting();
+    });
+
+    // disconnection occurs on two events (disconnect (from server), leave room)
+    const disconnecting = () => {
+      const leavingRoom = socketsInRooms[socket.id];
+      // if they're the last socket in the document, delete the document and the room
+      if (
+        liveDocuments[leavingRoom] && // check for document
+        Object.keys(liveDocuments[leavingRoom].currentUsers).length === 1
+      ) {
+        // do you need to check if the socket id matches?
+        delete liveDocuments[leavingRoom];
+      } else {
+        // otherwise, remove the user and send the updated document
+        delete liveDocuments[leavingRoom]?.currentUsers[socket.id];
+        io.to(leavingRoom).emit("leave", liveDocuments[leavingRoom]);
+      }
+
+      // console.log(liveDocuments);
+    };
+
+    socket.on("message", (message) => {
+      console.log("sent message:", message);
+    });
 
     // info is {document, user}
     socket.on("join", (info) => {
@@ -40,10 +76,11 @@ export const runSocketIo = () => {
         liveDocuments[info.document._id] = info.document;
       }
 
-      let cursorInfo;
+      let userInfo;
       // if the title is empty, put the cursor in the title
       if (liveDocuments[info.document._id].title === "") {
-        cursorInfo = {
+        userInfo = {
+          userId: info.user._id,
           cursorLocation: "title",
           cursorCharLocation: [0, 0],
           cursorPixelLocation: [
@@ -53,7 +90,7 @@ export const runSocketIo = () => {
         };
       } else {
         // otherwise, set the cursor in the body
-        cursorInfo = {
+        userInfo = {
           cursorLocation: "body",
           cursorPosition: [0, 0],
           cursorPixelLocation: [
@@ -67,39 +104,15 @@ export const runSocketIo = () => {
       if (!("currentUsers" in liveDocuments[info.document._id])) {
         liveDocuments[info.document._id].currentUsers = {};
       }
-      liveDocuments[info.document._id].currentUsers[info.user._id] = cursorInfo;
+      liveDocuments[info.document._id].currentUsers[socket.id] = userInfo;
 
       // join the session for the document id
       socket.join(info.document._id);
+      // keep track of which socket id is in which rooms
+      socketsInRooms[socket.id] = info.document._id;
       io.to(info.document._id).emit("join", liveDocuments[info.document._id]);
 
-      console.log("socket join: id:", socket.id);
-    });
-
-    // info is {document, user}
-    socket.on("leave", (info) => {
-      enableConsoleLogs &&
-        console.log(
-          `socket.io: ${info.user?.name} left room ${info.document._id}`
-        );
-
-      // if it only has one user, delete the document
-      if (
-        liveDocuments[info.document._id] && // check for document
-        Object.keys(liveDocuments[info.document._id].currentUsers).length === 1
-      ) {
-        delete liveDocuments[info.document?._id];
-      } else {
-        // otherwise, remove the user and send the updated document
-        delete liveDocuments[info.document?._id]?.currentUsers[info.user._id];
-        io.to(info.document._id).emit(
-          "leave",
-          liveDocuments[info.document._id]
-        );
-      }
-
-      // console.log("live documents: ", liveDocuments);
-      console.log("socket leave: id:", socket.id);
+      enableConsoleLogs && console.log("Updated live documents", liveDocuments);
     });
 
     let nameTimer;
@@ -177,14 +190,6 @@ export const runSocketIo = () => {
       updateDocument(query, updates);
 
       console.log("socket collabeditors: id:", socket.id);
-    });
-
-    socket.on("connect", (e) => {
-      console.log("socket connect: id:", socket.id);
-    });
-
-    socket.on("disconnect", (e) => {
-      console.log("socket disconnect: id:", socket.id);
     });
   });
 };
