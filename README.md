@@ -14,3 +14,7 @@ This is the server for the Collabeditor app. Follow these instructions to instal
 Notes
 
 - You can open [localhost:5050 ](http://localhost:5050/) to check if the server is running.
+
+## To Do
+
+- make sure the live documents are accurate as users join or leave
