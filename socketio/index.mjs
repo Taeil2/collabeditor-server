@@ -37,12 +37,15 @@ export const runSocketIo = () => {
 
     // see edit.mjs for editing functions
     socket.on("name", (info) => {
+      console.log("editing name", info);
       editName(socket, io, info);
     });
     socket.on("body", (info) => {
+      console.log("editing body", info);
       editBody(socket, io, info);
     });
     socket.on("collabeditors", (info) => {
+      console.log("editing collabeditors", info);
       editCollabeditors(socket, io, info);
     });
   });

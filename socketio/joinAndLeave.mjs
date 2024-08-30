@@ -1,7 +1,7 @@
 import { liveDocuments, socketsInRooms } from "./vars.mjs";
 
 // enable this to see logs
-const enableConsoleLogs = true;
+const enableConsoleLogs = false;
 
 // info is {document, user}
 const join = (socket, io, info) => {
@@ -33,6 +33,7 @@ const join = (socket, io, info) => {
   } else {
     // otherwise, set the cursor in the body
     userInfo = {
+      userId: info.user._id,
       cursorLocation: "body",
       cursorPosition: [0, 0],
       cursorPixelLocation: [

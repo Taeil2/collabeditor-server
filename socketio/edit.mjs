@@ -29,33 +29,32 @@ const editName = (socket, io, info) => {
   console.log("socket name: id:", socket.id);
 };
 
-// info is {document, user, body, key}
+// info is {document, user, body}
 const editBody = (socket, io, info) => {
+  enableConsoleLogs && console.log("socket.io: updating body:", info.body);
+
   let bodyTimer;
-  socket.on("body", (info) => {
-    enableConsoleLogs && console.log("socket.io: updating body:", info.body);
-    clearInterval(bodyTimer);
-    if (liveDocuments[info.document?._id]) {
-      liveDocuments[info.document?._id].content = info.body;
-    }
+  clearInterval(bodyTimer);
+  if (liveDocuments[info.document?._id]) {
+    liveDocuments[info.document?._id].content = info.body;
+  }
 
-    io.to(info.document._id).emit("body", liveDocuments[info.document._id]);
+  io.to(info.document._id).emit("body", liveDocuments[info.document._id]);
 
-    // save document after 500 ms of no input
-    bodyTimer = setTimeout(() => {
-      const query = { _id: ObjectId(info.document._id) };
-      const updates = {
-        $set: {
-          content: info.body,
-        },
-      };
+  // save document after 500 ms of no input
+  bodyTimer = setTimeout(() => {
+    const query = { _id: ObjectId(info.document._id) };
+    const updates = {
+      $set: {
+        content: info.body,
+      },
+    };
 
-      updateDocument(query, updates);
-      enableConsoleLogs && console.log("updating body:", info.body);
-    }, 500);
+    updateDocument(query, updates);
+    enableConsoleLogs && console.log("updating body:", info.body);
+  }, 500);
 
-    console.log("socket body: id:", socket.id);
-  });
+  console.log("socket body: id:", socket.id);
 };
 
 // info is { document, collabeditors }
