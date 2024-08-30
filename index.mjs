@@ -4,7 +4,7 @@ import "./loadEnvironment.mjs";
 import "express-async-errors";
 import documents from "./routes/documents.mjs";
 import users from "./routes/users.mjs";
-import { runSocketIo } from "./routes/socketio.mjs"; // not really a route
+import { runSocketIo } from "./socketio/index.mjs";
 
 // socket.io imports
 import { createServer } from "node:http";
