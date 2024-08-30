@@ -1,5 +1,8 @@
 import { liveDocuments, socketsInRooms } from "./vars.mjs";
 
+import { ObjectId } from "mongodb";
+import { updateDocument } from "../routes/documents.mjs";
+
 // enable this to see logs
 const enableConsoleLogs = true;
 
@@ -25,11 +28,9 @@ const editName = (socket, io, info) => {
     updateDocument(query, updates);
     enableConsoleLogs && console.log("socket.io: saving name:", info.name);
   }, 500);
-
-  console.log("socket name: id:", socket.id);
 };
 
-// info is {document, user, body}
+// info is {document, body}
 const editBody = (socket, io, info) => {
   enableConsoleLogs && console.log("socket.io: updating body:", info.body);
 
@@ -53,8 +54,6 @@ const editBody = (socket, io, info) => {
     updateDocument(query, updates);
     enableConsoleLogs && console.log("updating body:", info.body);
   }, 500);
-
-  console.log("socket body: id:", socket.id);
 };
 
 // info is { document, collabeditors }
@@ -77,8 +76,6 @@ const editCollabeditors = (socket, io, info) => {
   };
 
   updateDocument(query, updates);
-
-  console.log("socket collabeditors: id:", socket.id);
 };
 
 export { editName, editBody, editCollabeditors };

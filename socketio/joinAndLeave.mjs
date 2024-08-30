@@ -1,13 +1,13 @@
 import { liveDocuments, socketsInRooms } from "./vars.mjs";
 
 // enable this to see logs
-const enableConsoleLogs = false;
+const enableConsoleLogs = true;
 
 // info is {document, user}
 const join = (socket, io, info) => {
   enableConsoleLogs &&
     console.log(
-      `socket.io: ${socket.id} joined room ${info.document._id} (${info.name})`
+      `socket.io: ${socket.id} joined room ${info.document._id} (${info.user.name})`
     );
 
   // if the document is active (has a socket.io session),
