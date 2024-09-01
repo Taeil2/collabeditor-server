@@ -4,7 +4,7 @@ import { ObjectId } from "mongodb";
 import { updateDocument } from "../routes/documents.mjs";
 
 // enable this to see logs
-const enableConsoleLogs = true;
+const enableConsoleLogs = false;
 
 // info is { document, name }
 const editName = (socket, io, info) => {

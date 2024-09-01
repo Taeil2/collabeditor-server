@@ -5,7 +5,7 @@ import { join, leave } from "./joinAndLeave.mjs";
 import { editName, editBody, editCollabeditors } from "./edit.mjs";
 
 // enable this to see logs
-const enableConsoleLogs = true;
+const enableConsoleLogs = false;
 
 export const runSocketIo = () => {
   const io = new Server(server, {

@@ -1,7 +1,7 @@
 import { liveDocuments, socketsInRooms } from "./vars.mjs";
 
 // enable this to see logs
-const enableConsoleLogs = true;
+const enableConsoleLogs = false;
 
 // info is {document, user}
 const join = (socket, io, info) => {
