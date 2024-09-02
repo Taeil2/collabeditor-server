@@ -2,7 +2,7 @@ import { server } from "../index.mjs";
 import { Server } from "socket.io";
 
 import { join, leave } from "./joinAndLeave.mjs";
-import { editName, editBody, editCollabeditors } from "./edit.mjs";
+import { editName, editContent, editCollabeditors } from "./edit.mjs";
 
 // enable this to see logs
 const enableConsoleLogs = false;
@@ -40,7 +40,7 @@ export const runSocketIo = () => {
       editName(socket, io, info);
     });
     socket.on("body", (info) => {
-      editBody(socket, io, info);
+      editContent(socket, io, info);
     });
     socket.on("collabeditors", (info) => {
       editCollabeditors(socket, io, info);

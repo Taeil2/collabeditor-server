@@ -30,29 +30,30 @@ const editName = (socket, io, info) => {
   }, 500);
 };
 
-// info is {document, body}
-const editBody = (socket, io, info) => {
-  enableConsoleLogs && console.log("socket.io: updating body:", info.body);
+// info is {document, content}
+const editContent = (socket, io, info) => {
+  enableConsoleLogs &&
+    console.log("socket.io: updating content:", info.content);
 
-  let bodyTimer;
-  clearInterval(bodyTimer);
+  let contentTimer;
+  clearInterval(contentTimer);
   if (liveDocuments[info.document?._id]) {
-    liveDocuments[info.document?._id].content = info.body;
+    liveDocuments[info.document?._id].content = info.content;
   }
 
-  io.to(info.document._id).emit("body", liveDocuments[info.document._id]);
+  io.to(info.document._id).emit("content", liveDocuments[info.document._id]);
 
   // save document after 500 ms of no input
-  bodyTimer = setTimeout(() => {
+  contentTimer = setTimeout(() => {
     const query = { _id: ObjectId(info.document._id) };
     const updates = {
       $set: {
-        content: info.body,
+        content: info.content,
       },
     };
 
     updateDocument(query, updates);
-    enableConsoleLogs && console.log("updating body:", info.body);
+    enableConsoleLogs && console.log("updating content:", info.content);
   }, 500);
 };
 
@@ -78,4 +79,4 @@ const editCollabeditors = (socket, io, info) => {
   updateDocument(query, updates);
 };
 
-export { editName, editBody, editCollabeditors };
+export { editName, editContent, editCollabeditors };

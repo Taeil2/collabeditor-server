@@ -43,11 +43,11 @@ const join = (socket, io, info) => {
     };
   }
 
-  // if current users does not exist, initiate it
-  if (!("currentUsers" in liveDocuments[info.document._id])) {
-    liveDocuments[info.document._id].currentUsers = {};
+  // if live users does not exist, initiate it
+  if (!("liveUsers" in liveDocuments[info.document._id])) {
+    liveDocuments[info.document._id].liveUsers = {};
   }
-  liveDocuments[info.document._id].currentUsers[socket.id] = userInfo;
+  liveDocuments[info.document._id].liveUsers[socket.id] = userInfo;
 
   // join the session for the document id
   socket.join(info.document._id);
@@ -64,13 +64,13 @@ const leave = (socket, io) => {
   // if they're the last socket in the document, delete the document and the room
   if (
     liveDocuments[leavingRoom] && // check for document
-    Object.keys(liveDocuments[leavingRoom].currentUsers).length === 1
+    Object.keys(liveDocuments[leavingRoom].liveUsers).length === 1
   ) {
     // do you need to check if the socket id matches?
     delete liveDocuments[leavingRoom];
   } else {
     // otherwise, remove the user and send the updated document
-    delete liveDocuments[leavingRoom]?.currentUsers[socket.id];
+    delete liveDocuments[leavingRoom]?.liveUsers[socket.id];
     io.to(leavingRoom).emit("leave", liveDocuments[leavingRoom]);
   }
 };
