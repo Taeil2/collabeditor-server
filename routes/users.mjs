@@ -5,7 +5,7 @@ import { ObjectId } from "mongodb";
 const router = express.Router();
 
 // enable this to see logs
-const enableConsoleLogs = false;
+const enableConsoleLogs = true;
 
 // Get a list of users
 router.get("/", async (req, res) => {
@@ -45,8 +45,8 @@ router.post("/", async (req, res) => {
 });
 
 // Update a user
-router.patch("/:id", async (req, res) => {
-  enableConsoleLogs && console.log("users: updating user id", req.params.id);
+router.patch("/:_id", async (req, res) => {
+  enableConsoleLogs && console.log("users: updating user id", req.params._id);
 
   const query = { _id: ObjectId(req.params.id) };
   const updates = {
@@ -60,8 +60,8 @@ router.patch("/:id", async (req, res) => {
 });
 
 // Delete an entry
-// router.delete("/:id", async (req, res) => {
-//   const query = { _id: ObjectId(req.params.id) };
+// router.delete("/:_id", async (req, res) => {
+//   const query = { _id: ObjectId(req.params._id) };
 
 //   const collection = db.collection("users");
 //   let result = await collection.deleteOne(query);

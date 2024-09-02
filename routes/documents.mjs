@@ -6,16 +6,16 @@ import { ObjectId } from "mongodb";
 const router = express.Router();
 
 // enable this to see logs
-const enableConsoleLogs = false;
+const enableConsoleLogs = true;
 
 router.get("/", async (req, res) => {
   enableConsoleLogs &&
-    console.log("documents: getting documents for user", req.query.id);
+    console.log("documents: getting documents for user", req.query._id);
 
   let collection = await db.collection("documents");
   let results = await collection
     .find({
-      $or: [{ owner: req.query.id }, { "collabeditors.id": req.query.id }],
+      $or: [{ owner: req.query._id }, { "collabeditors._id": req.query._id }],
     })
     .sort({ updated: -1 })
     .limit(50)
@@ -25,12 +25,12 @@ router.get("/", async (req, res) => {
 });
 
 // Get a single document
-router.get("/:id", async (req, res) => {
+router.get("/:_id", async (req, res) => {
   enableConsoleLogs &&
-    console.log("documents: getting document id", req.params.id);
+    console.log("documents: getting document id", req.params._id);
 
   let collection = await db.collection("documents");
-  let result = await collection.findOne({ _id: ObjectId(req.params.id) });
+  let result = await collection.findOne({ _id: ObjectId(req.params._id) });
 
   if (!result) res.send({ message: "not found" }).status(404);
   else res.send(result).status(200);
@@ -39,14 +39,14 @@ router.get("/:id", async (req, res) => {
 // Add a new document
 router.post("/", async (req, res) => {
   enableConsoleLogs &&
-    console.log("documents: creating document for user", req.body.id);
+    console.log("documents: creating document for user", req.body._id);
 
   let collection = await db.collection("documents");
 
   const newDocument = {
     name: "",
     content: "",
-    owner: req.body.id,
+    owner: req.body._id,
     collabeditors: [],
     updated: new Date(),
     created: new Date(),
@@ -58,8 +58,8 @@ router.post("/", async (req, res) => {
 });
 
 // Update the document
-router.patch("/:id", async (req, res) => {
-  const query = { _id: ObjectId(req.params.id) };
+router.patch("/:_id", async (req, res) => {
+  const query = { _id: ObjectId(req.params._id) };
   const updates = {
     $set: req.body,
   };
@@ -79,11 +79,11 @@ const updateDocument = async (query, updates) => {
 };
 
 // Delete an entry
-router.delete("/:id", async (req, res) => {
+router.delete("/:_id", async (req, res) => {
   enableConsoleLogs &&
-    console.log("documents: deleting document", req.params.id);
+    console.log("documents: deleting document", req.params._id);
 
-  const query = { _id: ObjectId(req.params.id) };
+  const query = { _id: ObjectId(req.params._id) };
 
   const collection = db.collection("documents");
   let result = await collection.deleteOne(query);
