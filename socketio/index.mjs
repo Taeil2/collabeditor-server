@@ -39,7 +39,7 @@ export const runSocketIo = () => {
     socket.on("name", (info) => {
       editName(socket, io, info);
     });
-    socket.on("body", (info) => {
+    socket.on("content", (info) => {
       editContent(socket, io, info);
     });
     socket.on("collabeditors", (info) => {
