@@ -19,27 +19,19 @@ const join = (socket, io, info) => {
   }
 
   let userInfo;
-  // if the title is empty, put the cursor in the title
-  if (liveDocuments[info.document._id].title === "") {
+  // if the name is empty, put the cursor in the name
+  if (liveDocuments[info.document._id].name === "") {
     userInfo = {
       userId: info.user._id,
-      cursorLocation: "title",
-      cursorCharLocation: [0, 0],
-      cursorPixelLocation: [
-        [1, 1],
-        [1, 1],
-      ],
+      cursorLocation: "name",
+      cursorIndex: [0, 0],
     };
   } else {
-    // otherwise, set the cursor in the body
+    // otherwise, set the cursor in the content
     userInfo = {
       userId: info.user._id,
-      cursorLocation: "body",
-      cursorPosition: [0, 0],
-      cursorPixelLocation: [
-        [1, 1],
-        [1, 1],
-      ],
+      cursorLocation: "content",
+      cursorIndex: [0, 0],
     };
   }
 
