@@ -6,6 +6,35 @@ import { updateDocument } from "../routes/documents.mjs";
 // enable this to see logs
 const enableConsoleLogs = false;
 
+// info is {document, content}
+const edit = (socket, io, document) => {
+  enableConsoleLogs && console.log("socket.io: updating document:", document);
+
+  let saveTimer;
+  clearInterval(saveTimer);
+  liveDocuments[document?._id] = document;
+
+  io.to(document._id).emit("edit", liveDocuments[document._id]);
+
+  // save document after 500 ms of no input
+  saveTimer = setTimeout(() => {
+    const query = { _id: ObjectId(document._id) };
+
+    // remove _id from the document update
+    const documentUpdates = {
+      ...document,
+    };
+    delete documentUpdates._id;
+    delete documentUpdates.liveUsers;
+    const updates = {
+      $set: documentUpdates,
+    };
+
+    updateDocument(query, updates);
+    enableConsoleLogs && console.log("updating document:", document);
+  }, 500);
+};
+
 // info is { document, name }
 const editName = (socket, io, info) => {
   enableConsoleLogs && console.log("socket.io: updating name:", info.name);
@@ -33,7 +62,8 @@ const editName = (socket, io, info) => {
 // info is {document, content}
 const editContent = (socket, io, info) => {
   enableConsoleLogs &&
-    console.log("socket.io: updating content:", info.content);
+    // console.log("socket.io: updating content:", info.content);
+    console.log("socket.io: updating content:", info);
 
   let contentTimer;
   clearInterval(contentTimer);
@@ -53,7 +83,7 @@ const editContent = (socket, io, info) => {
     };
 
     updateDocument(query, updates);
-    enableConsoleLogs && console.log("updating content:", info.content);
+    // enableConsoleLogs && console.log("updating content:", info.content);
   }, 500);
 };
 
@@ -79,4 +109,4 @@ const editCollabeditors = (socket, io, info) => {
   updateDocument(query, updates);
 };
 
-export { editName, editContent, editCollabeditors };
+export { edit, editName, editContent, editCollabeditors };

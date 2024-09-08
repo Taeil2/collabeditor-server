@@ -2,10 +2,10 @@ import { server } from "../index.mjs";
 import { Server } from "socket.io";
 
 import { join, leave } from "./joinAndLeave.mjs";
-import { editName, editContent, editCollabeditors } from "./edit.mjs";
+import { edit, editName, editContent, editCollabeditors } from "./edit.mjs";
 
 // enable this to see logs
-const enableConsoleLogs = false;
+const enableConsoleLogs = true;
 
 export const runSocketIo = () => {
   const io = new Server(server, {
@@ -26,12 +26,14 @@ export const runSocketIo = () => {
     });
     // disconnect handles events like page refresh, navigating away
     socket.on("disconnect", () => {
-      // enableConsoleLogs && console.log("socket.io: socket disconnecting: id:", socket.id);
+      enableConsoleLogs &&
+        console.log("socket.io: socket disconnecting: id:", socket.id);
       leave(socket, io);
     });
     // leave handles in app events like returning home
     socket.on("leave", () => {
-      // enableConsoleLogs && console.log("socket.io: socket leaving: id:", socket.id);
+      enableConsoleLogs &&
+        console.log("socket.io: socket leaving: id:", socket.id);
       leave(socket, io);
     });
 
@@ -44,6 +46,10 @@ export const runSocketIo = () => {
     });
     socket.on("collabeditors", (info) => {
       editCollabeditors(socket, io, info);
+    });
+
+    socket.on("edit", (document) => {
+      edit(socket, io, document);
     });
   });
 };

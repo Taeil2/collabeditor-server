@@ -53,6 +53,10 @@ const join = (socket, io, info) => {
 // leave uses socket and not any more information, because disconnection does not provide any information.
 const leave = (socket, io) => {
   const leavingRoom = socketsInRooms[socket.id];
+
+  enableConsoleLogs &&
+    console.log(`socket.io: ${socket.id} left room ${leavingRoom}`);
+
   // if they're the last socket in the document, delete the document and the room
   if (
     liveDocuments[leavingRoom] && // check for document
